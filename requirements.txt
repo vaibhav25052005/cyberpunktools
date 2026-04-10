@@ -1,0 +1,19 @@
+# Core Dependencies
+scapy>=2.5.0
+requests>=2.28.0
+colorama>=0.4.6
+
+# AI/ML Dependencies
+scikit-learn>=1.2.0
+numpy>=1.24.0
+pandas>=2.0.0
+
+# PDF Generation
+reportlab>=3.6.0
+
+# GUI (Comes with Python)
+# tkinter - No installation needed
+
+# Mobile App (Optional)
+# kivy>=2.2.0
+# buildozer>=1.5.0  # For Android builds
