@@ -5,6 +5,8 @@ from wifi_scanner import scan_wifi
 from ip_analyzer import IPAnalyzer
 from network_scanner import NetworkDeviceScanner
 from risk_engine import calculate_risk
+from email_phishing_detector import EmailPhishingDetector
+from password_generator import PasswordGenerator
 
 # Initialize colorama
 init(autoreset=True)
@@ -143,12 +145,100 @@ def main():
     else:
         print(Fore.CYAN + "Skipped network scan")
 
+    # ─── Email Phishing Detection ───
+    print_section("EMAIL PHISHING DETECTION")
+    email_choice = input(Fore.YELLOW + "Analyze email for phishing? (yes/no): " + Style.RESET_ALL).lower()
+    
+    email_detector = EmailPhishingDetector()
+    email_result = None
+    email_score = 0
+    
+    if email_choice == 'yes':
+        print(Fore.CYAN + "\n📧 Enter email details for analysis:")
+        subject = input(Fore.YELLOW + "Email Subject: " + Style.RESET_ALL)
+        sender = input(Fore.YELLOW + "Sender Email: " + Style.RESET_ALL)
+        
+        print(Fore.CYAN + "Email Body (press Enter twice to finish):")
+        body_lines = []
+        while True:
+            line = input()
+            if not line:
+                break
+            body_lines.append(line)
+        body = '\n'.join(body_lines)
+        
+        links_input = input(Fore.YELLOW + "Links in email (comma-separated): " + Style.RESET_ALL)
+        links = [link.strip() for link in links_input.split(',')] if links_input else []
+        
+        attachments_input = input(Fore.YELLOW + "Attachments (comma-separated, e.g., file.pdf): " + Style.RESET_ALL)
+        attachments = [att.strip() for att in attachments_input.split(',')] if attachments_input else []
+        
+        print(Fore.CYAN + "\n🔍 Analyzing email...\n")
+        email_result = email_detector.analyze_email(
+            subject=subject,
+            sender=sender,
+            body=body,
+            links=links,
+            attachments=attachments
+        )
+        
+        formatted_email = email_detector.format_results(email_result)
+        print(Fore.WHITE + formatted_email)
+        
+        email_score = email_result.get("Risk Score", 0)
+    else:
+        print(Fore.CYAN + "Skipped email analysis")
+
+    # ─── Password Generator ───
+    print_section("PASSWORD GENERATOR & MANAGER")
+    pwd_gen_choice = input(Fore.YELLOW + "Generate secure password? (yes/no): " + Style.RESET_ALL).lower()
+    
+    pwd_generator = PasswordGenerator()
+    generated_pwd = None
+    
+    if pwd_gen_choice == 'yes':
+        print(Fore.CYAN + "\n🔐 Password Generator Options:")
+        length = int(input(Fore.YELLOW + "Password length (default 16): " + Style.RESET_ALL) or "16")
+        
+        use_upper = input(Fore.YELLOW + "Include uppercase? (yes/no, default yes): " + Style.RESET_ALL).lower() != 'no'
+        use_lower = input(Fore.YELLOW + "Include lowercase? (yes/no, default yes): " + Style.RESET_ALL).lower() != 'no'
+        use_digits = input(Fore.YELLOW + "Include digits? (yes/no, default yes): " + Style.RESET_ALL).lower() != 'no'
+        use_symbols = input(Fore.YELLOW + "Include symbols? (yes/no, default yes): " + Style.RESET_ALL).lower() != 'no'
+        
+        print(Fore.CYAN + "\nGenerating password...\n")
+        generated_pwd, strength_info = pwd_generator.generate_password(
+            length=length,
+            use_uppercase=use_upper,
+            use_lowercase=use_lower,
+            use_digits=use_digits,
+            use_symbols=use_symbols
+        )
+        
+        formatted_pwd = pwd_generator.format_password_info(generated_pwd, strength_info)
+        print(Fore.WHITE + formatted_pwd)
+        
+        # Option to store password
+        store_choice = input(Fore.YELLOW + "\nStore this password securely? (yes/no): " + Style.RESET_ALL).lower()
+        if store_choice == 'yes':
+            service = input(Fore.YELLOW + "Service name: " + Style.RESET_ALL)
+            username = input(Fore.YELLOW + "Username: " + Style.RESET_ALL)
+            url = input(Fore.YELLOW + "URL (optional): " + Style.RESET_ALL)
+            
+            pwd_generator.store_password(service, username, generated_pwd, url)
+            print(Fore.GREEN + "✅ Password stored securely!")
+    else:
+        print(Fore.CYAN + "Skipped password generation")
+
     # ─── Risk Calculation ───
     print_section("OVERALL SECURITY ASSESSMENT")
     
     # Add IP score to calculation if available
     if ip_score > 0:
         scores.append(ip_score)
+    
+    # Add email score to calculation if available
+    if email_score > 0:
+        scores.append(email_score)
     
     risk_level, recommendations = calculate_risk(scores)
 

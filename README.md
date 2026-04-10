@@ -12,10 +12,14 @@
 - **Risk Assessment Engine** - Overall security scoring
 
 ### 🚀 Advanced Features
-- **🎨 Modern GUI Dashboard** - Beautiful Tkinter interface with 5 tabs
+- **🎨 Modern GUI Dashboard** - Beautiful Tkinter interface with 7 tabs
 - **📊 PDF Report Generator** - Professional security reports
 - **🧠 AI-Powered Detection** - Machine learning phishing detection
 - **📱 Mobile App** - Cross-platform mobile application (Kivy)
+
+### 🆕 New Features
+- **📧 Email Phishing Detector** - Analyze emails for phishing attempts ⭐ NEW
+- **🔐 Password Generator & Manager** - Generate and securely store passwords ⭐ NEW
 
 ---
 
@@ -33,6 +37,8 @@ CYBERPUNK/
 │   ├── password_checker.py        # Password strength analysis
 │   ├── phishing_detector.py       # Rule-based URL checking
 │   ├── ai_phishing_detector.py    # AI/ML phishing detection
+│   ├── email_phishing_detector.py # Email phishing analysis ⭐ NEW
+│   ├── password_generator.py      # Password generator & manager ⭐ NEW
 │   ├── ip_analyzer.py             # IP address analysis ⭐ NEW
 │   ├── wifi_scanner.py            # WiFi network scanner
 │   └── risk_engine.py             # Risk calculation engine
@@ -175,6 +181,77 @@ python pdf_report_generator.py
 - WiFi scan results
 - Security recommendations
 - Professional formatting
+
+---
+
+### 6️⃣ Email Phishing Detection
+
+Analyze emails for phishing attempts and malicious content:
+
+```bash
+python email_phishing_detector.py
+```
+
+**Features:**
+- ✅ Sender analysis (typosquatting detection, domain verification)
+- ✅ Subject line analysis (urgency tactics, reward bait)
+- ✅ Body content analysis (suspicious keywords, threats)
+- ✅ Link analysis (integration with URL phishing detector)
+- ✅ Attachment analysis (dangerous file types, double extensions)
+- ✅ Risk scoring and detailed warnings
+
+**What it detects:**
+- Typosquatting (e.g., paypa1.com vs paypal.com)
+- Urgency and fear tactics
+- Requests for sensitive information
+- Dangerous attachments (.exe, .bat, etc.)
+- Suspicious links and domains
+- Poor grammar and generic greetings
+
+**Test it:**
+```bash
+python email_phishing_detector.py
+```
+
+---
+
+### 7️⃣ Password Generator & Manager
+
+Generate cryptographically secure passwords and manage them safely:
+
+```bash
+python password_generator.py
+```
+
+**Features:**
+- ✅ Cryptographically secure password generation
+- ✅ Memorable passphrase generation
+- ✅ Password strength analysis
+- ✅ Crack time estimation
+- ✅ Encrypted password storage
+- ✅ Password health monitoring
+- ✅ Duplicate password detection
+
+**Password Options:**
+- Customizable length (8-64 characters)
+- Character types (uppercase, lowercase, digits, symbols)
+- Entropy calculation
+- Strength scoring
+
+**Test it:**
+```bash
+python password_generator.py
+```
+
+**Example Output:**
+```
+Password: tKWmTWM?)~2`ihlq]=J~
+Length: 20
+Strength: VERY STRONG
+Score: 110/100
+Entropy: 140 bits
+Crack Time: Centuries+
+```
 
 ---
 
@@ -321,10 +398,10 @@ User Input
 - [ ] Real-time website monitoring
 - [ ] Browser extension integration
 - [ ] Cloud-based threat intelligence
-- [ ] Password manager integration
+- [x] Password manager integration ✅
 - [ ] Two-factor authentication setup
 - [ ] Dark web monitoring
-- [ ] Email phishing detection
+- [x] Email phishing detection ✅
 - [ ] Network traffic analysis
 
 ---

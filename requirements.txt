@@ -11,6 +11,9 @@ pandas>=2.0.0
 # PDF Generation
 reportlab>=3.6.0
 
+# Password Encryption
+cryptography>=41.0.0
+
 # GUI (Comes with Python)
 # tkinter - No installation needed
 

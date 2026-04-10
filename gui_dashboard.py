@@ -16,6 +16,8 @@ from risk_engine import calculate_risk
 from pdf_report_generator import PDFReportGenerator
 from password_recovery_guide import PasswordRecoveryGuide
 from ethical_cybersecurity_framework import EthicalCybersecurityFramework
+from email_phishing_detector import EmailPhishingDetector
+from password_generator import PasswordGenerator
 
 class CyberSecurityDashboard:
     """Modern GUI Dashboard for Cyber Security Assistant"""
@@ -44,11 +46,19 @@ class CyberSecurityDashboard:
         # Initialize enhanced IP scanner
         self.enhanced_scanner = EnhancedIPScanner()
         
+        # Initialize email phishing detector
+        self.email_detector = EmailPhishingDetector()
+        
+        # Initialize password generator
+        self.password_generator = PasswordGenerator()
+        
         # Store results
         self.results = {
             'password': {},
             'url': {},
             'wifi': {},
+            'ip': {},
+            'email': {},
             'risk_level': '',
             'recommendations': []
         }
@@ -104,6 +114,8 @@ class CyberSecurityDashboard:
         self.create_ip_tab()
         self.create_network_tab()
         self.create_wifi_tab()
+        self.create_email_phishing_tab()
+        self.create_password_generator_tab()
         self.create_recovery_tab()
         self.create_ethics_tab()
         self.create_results_tab()
@@ -269,6 +281,299 @@ class CyberSecurityDashboard:
             self.wifi_result_frame, height=20, font=('Consolas', 10)
         )
         self.wifi_result_text.pack(fill=tk.BOTH, expand=True)
+    
+    def create_email_phishing_tab(self):
+        """Email phishing detection tab"""
+        tab = ttk.Frame(self.notebook, padding="20")
+        self.notebook.add(tab, text="📧 Email Phishing")
+        
+        ttk.Label(tab, text="Email Phishing Detection", 
+                 style='Header.TLabel').pack(anchor=tk.W, pady=(0, 10))
+        
+        # Input frame
+        input_frame = ttk.LabelFrame(tab, text="Email Details", padding="10")
+        input_frame.pack(fill=tk.X, pady=10)
+        
+        # Subject
+        ttk.Label(input_frame, text="Subject:").grid(row=0, column=0, sticky=tk.W, pady=5)
+        self.email_subject_entry = ttk.Entry(input_frame, width=60)
+        self.email_subject_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        
+        # Sender
+        ttk.Label(input_frame, text="Sender:").grid(row=1, column=0, sticky=tk.W, pady=5)
+        self.email_sender_entry = ttk.Entry(input_frame, width=60)
+        self.email_sender_entry.grid(row=1, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        
+        # Body
+        ttk.Label(input_frame, text="Body:").grid(row=2, column=0, sticky=tk.W, pady=5)
+        self.email_body_text = scrolledtext.ScrolledText(input_frame, height=6, width=60)
+        self.email_body_text.grid(row=2, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        
+        # Links
+        ttk.Label(input_frame, text="Links (comma-separated):").grid(row=3, column=0, sticky=tk.W, pady=5)
+        self.email_links_entry = ttk.Entry(input_frame, width=60)
+        self.email_links_entry.grid(row=3, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        
+        # Attachments
+        ttk.Label(input_frame, text="Attachments (comma-separated):").grid(row=4, column=0, sticky=tk.W, pady=5)
+        self.email_attachments_entry = ttk.Entry(input_frame, width=60)
+        self.email_attachments_entry.grid(row=4, column=1, sticky=(tk.W, tk.E), padx=5, pady=5)
+        
+        input_frame.columnconfigure(1, weight=1)
+        
+        # Button frame
+        btn_frame = ttk.Frame(tab)
+        btn_frame.pack(fill=tk.X, pady=10)
+        
+        ttk.Button(btn_frame, text="🔍 Analyze Email", 
+                  command=self.analyze_email).pack(side=tk.LEFT)
+        
+        # Result frame
+        self.email_result_frame = ttk.LabelFrame(tab, text="Analysis Results", padding="10")
+        self.email_result_frame.pack(fill=tk.BOTH, expand=True, pady=10)
+        
+        self.email_result_text = scrolledtext.ScrolledText(
+            self.email_result_frame, height=15, font=('Consolas', 10)
+        )
+        self.email_result_text.pack(fill=tk.BOTH, expand=True)
+    
+    def create_password_generator_tab(self):
+        """Password generator tab"""
+        tab = ttk.Frame(self.notebook, padding="20")
+        self.notebook.add(tab, text="🔐 Password Gen")
+        
+        ttk.Label(tab, text="Secure Password Generator & Manager", 
+                 style='Header.TLabel').pack(anchor=tk.W, pady=(0, 10))
+        
+        # Options frame
+        options_frame = ttk.LabelFrame(tab, text="Password Options", padding="10")
+        options_frame.pack(fill=tk.X, pady=10)
+        
+        # Length
+        length_frame = ttk.Frame(options_frame)
+        length_frame.pack(fill=tk.X, pady=5)
+        ttk.Label(length_frame, text="Length:").pack(side=tk.LEFT, padx=(0, 10))
+        self.pwd_length_var = tk.StringVar(value="16")
+        ttk.Spinbox(length_frame, from_=8, to=64, textvariable=self.pwd_length_var, width=10).pack(side=tk.LEFT)
+        
+        # Character options
+        char_frame = ttk.Frame(options_frame)
+        char_frame.pack(fill=tk.X, pady=5)
+        
+        self.pwd_upper_var = tk.BooleanVar(value=True)
+        ttk.Checkbutton(char_frame, text="Uppercase (A-Z)", variable=self.pwd_upper_var).pack(side=tk.LEFT, padx=5)
+        
+        self.pwd_lower_var = tk.BooleanVar(value=True)
+        ttk.Checkbutton(char_frame, text="Lowercase (a-z)", variable=self.pwd_lower_var).pack(side=tk.LEFT, padx=5)
+        
+        self.pwd_digits_var = tk.BooleanVar(value=True)
+        ttk.Checkbutton(char_frame, text="Digits (0-9)", variable=self.pwd_digits_var).pack(side=tk.LEFT, padx=5)
+        
+        self.pwd_symbols_var = tk.BooleanVar(value=True)
+        ttk.Checkbutton(char_frame, text="Symbols (!@#$)", variable=self.pwd_symbols_var).pack(side=tk.LEFT, padx=5)
+        
+        # Generate button
+        btn_frame = ttk.Frame(tab)
+        btn_frame.pack(fill=tk.X, pady=10)
+        
+        ttk.Button(btn_frame, text="🔑 Generate Password", 
+                  command=self.generate_password).pack(side=tk.LEFT, padx=5)
+        ttk.Button(btn_frame, text="📝 Generate Passphrase", 
+                  command=self.generate_passphrase).pack(side=tk.LEFT, padx=5)
+        
+        # Generated password display
+        pwd_display_frame = ttk.LabelFrame(tab, text="Generated Password", padding="10")
+        pwd_display_frame.pack(fill=tk.X, pady=10)
+        
+        self.generated_pwd_text = tk.Text(pwd_display_frame, height=3, font=('Consolas', 14), wrap=tk.WORD)
+        self.generated_pwd_text.pack(fill=tk.X, pady=5)
+        
+        # Strength info
+        self.pwd_strength_label = ttk.Label(pwd_display_frame, text="", style='Result.TLabel')
+        self.pwd_strength_label.pack(anchor=tk.W, pady=5)
+        
+        # Store password frame
+        store_frame = ttk.LabelFrame(tab, text="Store Password (Encrypted)", padding="10")
+        store_frame.pack(fill=tk.X, pady=10)
+        
+        ttk.Label(store_frame, text="Service:").grid(row=0, column=0, sticky=tk.W, pady=5)
+        self.store_service_entry = ttk.Entry(store_frame, width=30)
+        self.store_service_entry.grid(row=0, column=1, sticky=tk.W, padx=5, pady=5)
+        
+        ttk.Label(store_frame, text="Username:").grid(row=1, column=0, sticky=tk.W, pady=5)
+        self.store_username_entry = ttk.Entry(store_frame, width=30)
+        self.store_username_entry.grid(row=1, column=1, sticky=tk.W, padx=5, pady=5)
+        
+        ttk.Label(store_frame, text="URL (optional):").grid(row=2, column=0, sticky=tk.W, pady=5)
+        self.store_url_entry = ttk.Entry(store_frame, width=30)
+        self.store_url_entry.grid(row=2, column=1, sticky=tk.W, padx=5, pady=5)
+        
+        ttk.Button(store_frame, text="💾 Store Password", 
+                  command=self.store_generated_password).grid(row=3, column=1, sticky=tk.W, pady=10)
+        
+        # Password health check
+        health_frame = ttk.LabelFrame(tab, text="Password Health", padding="10")
+        health_frame.pack(fill=tk.BOTH, expand=True, pady=10)
+        
+        ttk.Button(health_frame, text="📊 Check Password Health", 
+                  command=self.check_password_health).pack(pady=5)
+        
+        self.pwd_health_text = scrolledtext.ScrolledText(
+            health_frame, height=10, font=('Consolas', 10)
+        )
+        self.pwd_health_text.pack(fill=tk.BOTH, expand=True, pady=5)
+        
+    def analyze_email(self):
+        """Analyze email for phishing"""
+        subject = self.email_subject_entry.get()
+        sender = self.email_sender_entry.get()
+        body = self.email_body_text.get(1.0, tk.END).strip()
+        
+        links_input = self.email_links_entry.get()
+        links = [link.strip() for link in links_input.split(',')] if links_input else []
+        
+        attachments_input = self.email_attachments_entry.get()
+        attachments = [att.strip() for att in attachments_input.split(',')] if attachments_input else []
+        
+        if not subject and not sender and not body:
+            messagebox.showwarning("Warning", "Please enter at least subject, sender, or body")
+            return
+        
+        # Run analysis in thread to avoid freezing UI
+        def analyze_thread():
+            result = self.email_detector.analyze_email(
+                subject=subject,
+                sender=sender,
+                body=body,
+                links=links,
+                attachments=attachments
+            )
+            
+            self.results['email'] = result
+            
+            # Update UI
+            self.root.after(0, lambda: self.display_email_result(result))
+        
+        threading.Thread(target=analyze_thread, daemon=True).start()
+    
+    def display_email_result(self, result):
+        """Display email analysis result"""
+        self.email_result_text.delete(1.0, tk.END)
+        
+        risk = result.get('Overall Risk', 'UNKNOWN')
+        score = result.get('Risk Score', 0)
+        
+        self.email_result_text.insert(tk.END, f"Overall Risk: {risk}\n")
+        self.email_result_text.insert(tk.END, f"Risk Score: {score}/100\n")
+        self.email_result_text.insert(tk.END, f"Timestamp: {result.get('Timestamp', '')}\n\n")
+        
+        warnings = result.get('Warnings', [])
+        if warnings:
+            self.email_result_text.insert(tk.END, "⚠️ WARNINGS:\n")
+            for warning in warnings:
+                self.email_result_text.insert(tk.END, f"  • {warning}\n")
+        else:
+            self.email_result_text.insert(tk.END, "✅ No warnings detected\n")
+    
+    def generate_password(self):
+        """Generate secure password"""
+        try:
+            length = int(self.pwd_length_var.get())
+            if length < 8 or length > 64:
+                messagebox.showwarning("Warning", "Password length must be between 8 and 64")
+                return
+            
+            password, strength_info = self.password_generator.generate_password(
+                length=length,
+                use_uppercase=self.pwd_upper_var.get(),
+                use_lowercase=self.pwd_lower_var.get(),
+                use_digits=self.pwd_digits_var.get(),
+                use_symbols=self.pwd_symbols_var.get()
+            )
+            
+            # Display password
+            self.generated_pwd_text.delete(1.0, tk.END)
+            self.generated_pwd_text.insert(1.0, password)
+            
+            # Display strength
+            strength_text = f"Strength: {strength_info['Strength']} | Score: {strength_info['Score']}/100 | Crack Time: {strength_info['Crack Time']}"
+            self.pwd_strength_label.config(text=strength_text)
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to generate password: {str(e)}")
+    
+    def generate_passphrase(self):
+        """Generate memorable passphrase"""
+        try:
+            passphrase, strength_info = self.password_generator.generate_passphrase(
+                num_words=6,
+                capitalize=True,
+                add_number=True
+            )
+            
+            # Display passphrase
+            self.generated_pwd_text.delete(1.0, tk.END)
+            self.generated_pwd_text.insert(1.0, passphrase)
+            
+            # Display strength
+            strength_text = f"Strength: {strength_info['Strength']} | Score: {strength_info['Score']}/100 | Crack Time: {strength_info['Crack Time']}"
+            self.pwd_strength_label.config(text=strength_text)
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to generate passphrase: {str(e)}")
+    
+    def store_generated_password(self):
+        """Store generated password"""
+        password = self.generated_pwd_text.get(1.0, tk.END).strip()
+        service = self.store_service_entry.get()
+        username = self.store_username_entry.get()
+        url = self.store_url_entry.get()
+        
+        if not password:
+            messagebox.showwarning("Warning", "Please generate a password first")
+            return
+        
+        if not service or not username:
+            messagebox.showwarning("Warning", "Please enter service name and username")
+            return
+        
+        try:
+            self.password_generator.store_password(service, username, password, url)
+            messagebox.showinfo("Success", "Password stored securely!")
+            
+            # Clear fields
+            self.store_service_entry.delete(0, tk.END)
+            self.store_username_entry.delete(0, tk.END)
+            self.store_url_entry.delete(0, tk.END)
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to store password: {str(e)}")
+    
+    def check_password_health(self):
+        """Check health of stored passwords"""
+        try:
+            health_report = self.password_generator.check_password_health()
+            
+            self.pwd_health_text.delete(1.0, tk.END)
+            
+            if 'Status' in health_report:
+                self.pwd_health_text.insert(tk.END, f"Status: {health_report['Status']}\n")
+                return
+            
+            self.pwd_health_text.insert(tk.END, f"Total Passwords: {health_report['Total']}\n")
+            self.pwd_health_text.insert(tk.END, f"Strong: {health_report['Strong']}\n")
+            self.pwd_health_text.insert(tk.END, f"Moderate: {health_report['Moderate']}\n")
+            self.pwd_health_text.insert(tk.END, f"Weak: {health_report['Weak']}\n")
+            self.pwd_health_text.insert(tk.END, f"Duplicates: {health_report['Duplicate Passwords']}\n")
+            self.pwd_health_text.insert(tk.END, f"Short Passwords: {health_report['Short Passwords']}\n\n")
+            
+            if health_report.get('Recommendations'):
+                self.pwd_health_text.insert(tk.END, "Recommendations:\n")
+                for rec in health_report['Recommendations']:
+                    self.pwd_health_text.insert(tk.END, f"  • {rec}\n")
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to check password health: {str(e)}")
         
     def create_results_tab(self):
         """Overall results tab"""
